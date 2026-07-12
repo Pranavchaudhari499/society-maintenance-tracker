@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ResidentDashboard from "./pages/ResidentDashboard";
+import RaiseComplaint from "./pages/RaiseComplaint";
 import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
@@ -13,8 +14,12 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
           <Route path="/resident" element={<ProtectedRoute allowedRoles={["RESIDENT"]}><ResidentDashboard /></ProtectedRoute>} />
+          <Route path="/resident/raise" element={<ProtectedRoute allowedRoles={["RESIDENT"]}><RaiseComplaint /></ProtectedRoute>} />
+
           <Route path="/admin" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
+
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
