@@ -24,7 +24,7 @@ model User {
 model Complaint {
   id          String             @id @default(uuid())
   residentId  String
-  category    String
+  category    ComplaintCategory
   description String
   status      ComplaintStatus    @default(OPEN)
   priority    Priority           @default(LOW)
@@ -89,6 +89,16 @@ model Setting {
 enum Role {
   RESIDENT
   ADMIN
+}
+
+enum ComplaintCategory {
+  ELECTRICAL
+  PLUMBING
+  CLEANING
+  SECURITY
+  PARKING
+  STRUCTURAL
+  OTHER
 }
 
 enum ComplaintStatus {
