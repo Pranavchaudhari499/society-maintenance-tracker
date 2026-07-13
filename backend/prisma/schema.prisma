@@ -24,12 +24,12 @@ model User {
 model Complaint {
   id          String             @id @default(uuid())
   residentId  String
-  category    ComplaintCategory
   description String
   status      ComplaintStatus    @default(OPEN)
   priority    Priority           @default(LOW)
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
+  category    ComplaintCategory
   history     ComplaintHistory[]
   media       ComplaintMedia[]
   resident    User               @relation("ResidentComplaints", fields: [residentId], references: [id])

@@ -6,6 +6,7 @@ import complaintRoutes from "./routes/complaintRoutes";
 import adminComplaintRoutes from "./routes/adminComplaintRoutes";
 import settingsRoutes from "./routes/settingsRoutes";
 import noticeRoutes from "./routes/noticeRoutes";
+import dashboardRoutes from "./routes/dashboardRoutes";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use("/complaints", complaintRoutes);
 app.use("/admin/complaints", adminComplaintRoutes);
 app.use("/admin/settings", settingsRoutes);
 app.use("/notices", noticeRoutes);
+app.use("/admin/dashboard", dashboardRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);

@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+ChartJS.register(ArcElement, Tooltip, Legend);
 import { api } from "../api/client";
 import Navbar from "../components/Navbar";
 import StatusUpdateModal from "../components/StatusUpdateModal";
@@ -33,14 +36,33 @@ export default function AdminDashboard() {
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [statusModalFor, setStatusModalFor] = useState<AdminComplaint | null>(null);
 
+    const [dashboardData, setDashboardData] = useState<any>(null);
+    const [dashboardLoading, setDashboardLoading] = useState(true);
+
     const [categoryFilter, setCategoryFilter] = useState<ComplaintCategory | "">("");
     const [statusFilter, setStatusFilter] = useState<ComplaintStatus | "">("");
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
 
     useEffect(() => {
+        loadDashboard();
+    }, []);
+
+    useEffect(() => {
         loadComplaints();
     }, [categoryFilter, statusFilter, fromDate, toDate]);
+
+    async function loadDashboard() {
+        setDashboardLoading(true);
+        try {
+            const res = await api.get("/admin/dashboard");
+            setDashboardData(res.data.data);
+        } catch (err) {
+            console.error("Failed to load dashboard stats", err);
+        } finally {
+            setDashboardLoading(false);
+        }
+    }
 
     async function loadComplaints() {
         setLoading(true);
@@ -88,6 +110,59 @@ export default function AdminDashboard() {
             <Navbar links={NAV_LINKS} />
 
             <div className="max-w-5xl mx-auto p-8">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Dashboard Overview</h2>
+                
+                {dashboardLoading ? (
+                    <p className="text-sm text-gray-400 mb-8">Loading overview...</p>
+                ) : dashboardData ? (
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                        <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-center">
+                            <h3 className="text-sm font-medium text-gray-500">Total Complaints</h3>
+                            <p className="text-2xl font-bold text-gray-900">{dashboardData.total}</p>
+                        </div>
+                        <div className="bg-white rounded-lg border border-red-200 bg-red-50 p-4 flex flex-col justify-center">
+                            <h3 className="text-sm font-medium text-red-800">Overdue Complaints</h3>
+                            <p className="text-2xl font-bold text-red-600">{dashboardData.overdueCount}</p>
+                        </div>
+                        <div className="bg-white rounded-lg border border-gray-200 p-4 col-span-1 md:col-span-2 flex items-center justify-between">
+                            <div className="flex-1">
+                                <h3 className="text-sm font-medium text-gray-500 mb-2">Status Breakdown</h3>
+                                <div className="space-y-1">
+                                    <div className="flex justify-between text-sm pr-6">
+                                        <span className="text-gray-600">Open:</span>
+                                        <span className="font-medium">{dashboardData.byStatus?.OPEN || 0}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm pr-6">
+                                        <span className="text-gray-600">In Progress:</span>
+                                        <span className="font-medium">{dashboardData.byStatus?.IN_PROGRESS || 0}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm pr-6">
+                                        <span className="text-gray-600">Resolved:</span>
+                                        <span className="font-medium">{dashboardData.byStatus?.RESOLVED || 0}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="w-24 h-24 shrink-0">
+                                <Doughnut 
+                                    data={{
+                                        labels: ['Open', 'In Progress', 'Resolved'],
+                                        datasets: [{
+                                            data: [
+                                                dashboardData.byStatus?.OPEN || 0,
+                                                dashboardData.byStatus?.IN_PROGRESS || 0,
+                                                dashboardData.byStatus?.RESOLVED || 0
+                                            ],
+                                            backgroundColor: ['#fde047', '#93c5fd', '#86efac'],
+                                            borderWidth: 0,
+                                        }]
+                                    }}
+                                    options={{ cutout: '70%', plugins: { legend: { display: false } } }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                ) : null}
+
                 <h2 className="text-lg font-medium text-gray-900 mb-4">All Complaints</h2>
 
                 <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4 flex flex-wrap gap-3 items-end">
