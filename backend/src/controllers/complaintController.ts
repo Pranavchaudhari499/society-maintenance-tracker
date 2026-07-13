@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../config/prisma";
 import { createComplaintSchema } from "../utils/complaintSchemas";
 import { sendSuccess, sendError } from "../utils/response";
+import { uploadBufferToCloudinary } from "../utils/cloudinaryUpload";
 
 // Resident creates a new complaint. Auto-creates the first history entry (null -> OPEN).
 export async function createComplaint(req: Request, res: Response) {
@@ -17,6 +18,23 @@ export async function createComplaint(req: Request, res: Response) {
 
     const { category, description } = parsed.data;
     const residentId = req.user!.userId;
+    const files = (req.files as Express.Multer.File[]) || [];
+
+    let uploadedUrls: string[] = [];
+    if (files.length > 0) {
+        try {
+            uploadedUrls = await Promise.all(
+                files.map((file) => uploadBufferToCloudinary(file.buffer))
+            );
+        } catch (err) {
+            return sendError(
+                res,
+                502,
+                "UPLOAD_FAILED",
+                "Failed to upload one or more photos. Please try again."
+            );
+        }
+    }
 
     const complaint = await prisma.complaint.create({
         data: {
@@ -31,6 +49,9 @@ export async function createComplaint(req: Request, res: Response) {
                     changedBy: residentId,
                     note: "Complaint raised",
                 },
+            },
+            media: {
+                create: uploadedUrls.map((url) => ({ url, type: "image" })),
             },
         },
         include: {
