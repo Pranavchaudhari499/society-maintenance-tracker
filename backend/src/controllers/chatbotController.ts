@@ -36,14 +36,14 @@ const TOOLS = [
             parameters: {
                 type: "object",
                 properties: {
-                    category: { 
-                        type: "string", 
+                    category: {
+                        type: "string",
                         enum: ["PLUMBING", "ELECTRICAL", "CARPENTRY", "CLEANING", "SECURITY", "OTHER"],
                         description: "The category of the complaint."
                     },
-                    description: { 
-                        type: "string", 
-                        description: "A detailed description of the issue based on what the resident said." 
+                    description: {
+                        type: "string",
+                        description: "A detailed description of the issue based on what the resident said."
                     }
                 },
                 required: ["category", "description"]
@@ -59,7 +59,7 @@ export async function chatWithBot(req: Request, res: Response) {
         return sendError(res, 400, "VALIDATION_ERROR", "Messages must be an array");
     }
 
-    const apiKey = process.env.GROK_API_KEY; 
+    const apiKey = process.env.GROK_API_KEY;
     if (!apiKey) {
         return sendError(res, 500, "CONFIG_ERROR", "AI API key is missing");
     }
@@ -117,11 +117,11 @@ export async function chatWithBot(req: Request, res: Response) {
         // Check if the AI wants to call a tool
         if (replyMessage.tool_calls && replyMessage.tool_calls.length > 0) {
             const toolCall = replyMessage.tool_calls[0];
-            
+
             if (toolCall.function.name === "create_complaint") {
                 const args = JSON.parse(toolCall.function.arguments);
                 const priority = determinePriority(args.description);
-                
+
                 // Create the complaint in the database!
                 const newComplaint = await prisma.complaint.create({
                     data: {

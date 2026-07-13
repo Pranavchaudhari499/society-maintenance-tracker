@@ -11,6 +11,9 @@
     "migrate:deploy": "prisma migrate deploy",
     "seed": "ts-node-dev --transpile-only prisma/seed.ts"
   },
+  "prisma": {
+    "seed": "ts-node-dev --transpile-only prisma/seed.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

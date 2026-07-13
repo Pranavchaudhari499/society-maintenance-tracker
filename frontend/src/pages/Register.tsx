@@ -10,7 +10,6 @@ export default function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [role, setRole] = useState<Role>("RESIDENT");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
@@ -24,7 +23,7 @@ export default function Register() {
         try {
             const res = await api.post<{ success: boolean; data: AuthResponse }>(
                 "/auth/register",
-                { name, email, password, role }
+                { name, email, password }
             );
             const { user, token } = res.data.data;
             login(user, token);
@@ -83,18 +82,6 @@ export default function Register() {
                             className="w-full px-4 py-2.5 bg-white/50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all duration-200"
                             placeholder="At least 6 characters"
                         />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Role</label>
-                        <select
-                            value={role}
-                            onChange={(e) => setRole(e.target.value as Role)}
-                            className="w-full px-4 py-2.5 bg-white/50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all duration-200"
-                        >
-                            <option value="RESIDENT">Resident</option>
-                            <option value="ADMIN">Admin</option>
-                        </select>
                     </div>
 
                     <button

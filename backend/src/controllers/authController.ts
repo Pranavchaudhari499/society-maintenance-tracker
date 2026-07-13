@@ -25,7 +25,7 @@ export async function register(req: Request, res: Response) {
         );
     }
 
-    const { name, email, password, role } = parsed.data;
+    const { name, email, password } = parsed.data;
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
@@ -35,7 +35,7 @@ export async function register(req: Request, res: Response) {
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
-        data: { name, email, passwordHash, role },
+        data: { name, email, passwordHash, role: "RESIDENT" },
         select: { id: true, name: true, email: true, role: true, createdAt: true },
     });
 

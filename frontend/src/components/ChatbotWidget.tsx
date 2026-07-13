@@ -29,7 +29,7 @@ export default function ChatbotWidget() {
 
         const userMessage = input.trim();
         setInput("");
-        
+
         // Add user message to UI
         const newMessages: Message[] = [...messages, { role: "user", content: userMessage }];
         setMessages(newMessages);
@@ -85,7 +85,7 @@ export default function ChatbotWidget() {
                                 <p className="text-xs text-indigo-100">Society Assistant</p>
                             </div>
                         </div>
-                        <button 
+                        <button
                             onClick={() => setIsOpen(false)}
                             className="text-indigo-100 hover:text-white transition-colors"
                         >
@@ -96,8 +96,8 @@ export default function ChatbotWidget() {
                     {/* Messages Area */}
                     <div className="flex-1 overflow-y-auto p-5 bg-gray-50 flex flex-col gap-4">
                         {messages.map((msg, idx) => (
-                            <div 
-                                key={idx} 
+                            <div
+                                key={idx}
                                 className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}
                             >
                                 <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${msg.role === "user" ? "bg-indigo-100 text-indigo-600" : "bg-white shadow-sm border border-gray-100 text-indigo-600"}`}>
@@ -108,7 +108,7 @@ export default function ChatbotWidget() {
                                 </div>
                             </div>
                         ))}
-                        
+
                         {isLoading && (
                             <div className="flex gap-3 max-w-[85%] mr-auto">
                                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-indigo-600">
