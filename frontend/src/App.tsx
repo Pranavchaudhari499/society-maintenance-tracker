@@ -9,10 +9,12 @@ import NoticeBoard from "./pages/NoticeBoard";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminSettings from "./pages/AdminSettings";
 import AdminNotices from "./pages/AdminNotices";
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-right" />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />

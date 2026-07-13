@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api/client";
 import Navbar from "../components/Navbar";
 import type { Notice } from "../types/notice";
+import { Pin, Bell } from "lucide-react";
 
 const NAV_LINKS = [
     { label: "My Complaints", to: "/resident" },
@@ -41,48 +42,64 @@ export default function NoticeBoard() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-100">
             <Navbar links={NAV_LINKS} />
 
-            <div className="max-w-3xl mx-auto p-8">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Notice Board</h2>
+            <div className="max-w-4xl mx-auto p-8">
+                <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Notice Board</h2>
+                    <p className="text-sm text-gray-500 font-medium mt-1">Stay updated with the latest announcements</p>
+                </div>
 
                 {error && (
-                    <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+                    <div className="mb-6 text-sm text-red-600 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-xl px-4 py-3">
                         {error}
                     </div>
                 )}
 
                 {loading ? (
-                    <p className="text-sm text-gray-400">Loading...</p>
+                    <div className="flex justify-center py-12">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    </div>
                 ) : notices.length === 0 ? (
-                    <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-                        <p className="text-sm text-gray-500">No notices yet.</p>
+                    <div className="bg-white/60 backdrop-blur-xl rounded-2xl border border-white/50 p-12 flex flex-col items-center justify-center text-center shadow-sm">
+                        <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
+                            <Bell className="w-8 h-8 text-indigo-300" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">No notices yet</h3>
+                        <p className="text-sm text-gray-500 max-w-sm">The admin hasn't posted any announcements. Check back later.</p>
                     </div>
                 ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                         {notices.map((n) => (
                             <div
                                 key={n.id}
-                                className={`bg-white rounded-lg border p-4 ${n.isImportant ? "border-amber-300 ring-1 ring-amber-100" : "border-gray-200"
+                                className={`rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 ${n.isImportant 
+                                    ? "bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200" 
+                                    : "bg-white/80 backdrop-blur-sm border border-gray-200"
                                     }`}
                             >
-                                <div className="flex items-start justify-between gap-3">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-1">
+                                <div className="flex items-start justify-between gap-4">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-2">
                                             {n.isImportant && (
-                                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
-                                                    📌 Pinned
+                                                <span className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-md bg-amber-500 text-white shadow-sm">
+                                                    <Pin className="w-3 h-3" /> Pinned
                                                 </span>
                                             )}
-                                            <h3 className="text-sm font-semibold text-gray-900">{n.title}</h3>
+                                            <h3 className={`text-lg font-bold ${n.isImportant ? 'text-amber-900' : 'text-gray-900'}`}>{n.title}</h3>
                                         </div>
-                                        <p className="text-sm text-gray-600 whitespace-pre-wrap">{n.body}</p>
+                                        <p className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">{n.body}</p>
                                     </div>
                                 </div>
-                                <p className="text-xs text-gray-400 mt-2">
-                                    Posted by {n.poster.name} &middot; {formatDate(n.createdAt)}
-                                </p>
+                                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                    <p className="text-xs font-medium text-gray-400">
+                                        Posted by <span className="text-gray-600">{n.poster.name}</span>
+                                    </p>
+                                    <p className="text-xs text-gray-400">
+                                        {formatDate(n.createdAt)}
+                                    </p>
+                                </div>
                             </div>
                         ))}
                     </div>
