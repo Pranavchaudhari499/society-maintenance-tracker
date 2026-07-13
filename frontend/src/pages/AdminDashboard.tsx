@@ -19,7 +19,10 @@ const PRIORITY_BADGE: Record<Priority, string> = {
     HIGH: "bg-red-100 text-red-700",
 };
 
-const NAV_LINKS = [{ label: "Complaints", to: "/admin" }];
+const NAV_LINKS = [
+    { label: "Complaints", to: "/admin" },
+    { label: "Settings", to: "/admin/settings" },
+];
 
 export default function AdminDashboard() {
     const [complaints, setComplaints] = useState<AdminComplaint[]>([]);
@@ -146,7 +149,11 @@ export default function AdminDashboard() {
                 ) : (
                     <div className="space-y-3">
                         {complaints.map((c) => (
-                            <div key={c.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                            <div
+                                key={c.id}
+                                className={`bg-white rounded-lg border overflow-hidden ${c.isOverdue ? "border-red-300 ring-1 ring-red-100" : "border-gray-200"
+                                    }`}
+                            >
                                 <div className="p-4">
                                     <div className="flex justify-between items-start gap-4">
                                         <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === c.id ? null : c.id)}>
@@ -160,6 +167,13 @@ export default function AdminDashboard() {
                                                 <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${PRIORITY_BADGE[c.priority]}`}>
                                                     {c.priority}
                                                 </span>
+
+                                                {c.isOverdue && (
+                                                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-600 text-white">
+                                                        ⚠ Overdue
+                                                    </span>
+                                                )}
+
                                             </div>
                                             <p className="text-sm text-gray-800">{c.description}</p>
                                             <p className="text-xs text-gray-400 mt-1">

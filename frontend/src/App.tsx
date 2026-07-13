@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import ResidentDashboard from "./pages/ResidentDashboard";
 import RaiseComplaint from "./pages/RaiseComplaint";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminSettings from "./pages/AdminSettings";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/resident/raise" element={<ProtectedRoute allowedRoles={["RESIDENT"]}><RaiseComplaint /></ProtectedRoute>} />
 
           <Route path="/admin" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminSettings /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
