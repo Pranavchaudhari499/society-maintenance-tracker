@@ -6,6 +6,7 @@ import {
     complaintFilterSchema,
 } from "../utils/adminComplaintSchemas";
 import { sendSuccess, sendError } from "../utils/response";
+import { getCurrentOverdueThresholdDays } from "./settingsController";
 
 // Admin: list all complaints with optional filters (category, status, date range).
 export async function getAllComplaints(req: Request, res: Response) {
@@ -30,18 +31,37 @@ export async function getAllComplaints(req: Request, res: Response) {
         if (to) where.createdAt.lte = new Date(`${to}T23:59:59.999Z`);
     }
 
-    const complaints = await prisma.complaint.findMany({
-        where,
-        include: {
-            resident: { select: { id: true, name: true, email: true } },
-            history: { orderBy: { createdAt: "asc" } },
-            media: true,
-        },
-        orderBy: { createdAt: "desc" },
+    const [complaints, thresholdDays] = await Promise.all([
+        prisma.complaint.findMany({
+            where,
+            include: {
+                resident: { select: { id: true, name: true, email: true } },
+                history: { orderBy: { createdAt: "asc" } },
+                media: true,
+            },
+            orderBy: { createdAt: "desc" },
+        }),
+        getCurrentOverdueThresholdDays(),
+    ]);
+
+    const now = Date.now();
+    const thresholdMs = thresholdDays * 24 * 60 * 60 * 1000;
+
+    const withOverdue = complaints.map((c) => {
+        const isOverdue =
+            (c.status === "OPEN" || c.status === "IN_PROGRESS") &&
+            now - new Date(c.createdAt).getTime() > thresholdMs;
+        return { ...c, isOverdue };
     });
 
-    return sendSuccess(res, complaints);
-}
+    // Overdue complaints surface first; within each group, keep the existing createdAt desc order.
+    withOverdue.sort((a, b) => {
+        if (a.isOverdue !== b.isOverdue) return a.isOverdue ? -1 : 1;
+        return 0;
+    });
+
+    return sendSuccess(res, withOverdue);
+}   
 
 // Admin: update complaint status. Blocked once complaint is RESOLVED.
 export async function updateComplaintStatus(req: Request, res: Response) {
