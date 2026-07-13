@@ -4,6 +4,7 @@ import {
     getAllComplaints,
     updateComplaintStatus,
     updateComplaintPriority,
+    exportComplaints,
 } from "../controllers/adminComplaintController";
 
 const router = Router();
@@ -12,6 +13,7 @@ const router = Router();
 router.use(authenticate, requireAdmin);
 
 router.get("/", getAllComplaints);
+router.get("/export", exportComplaints);
 router.patch("/:id/status", updateComplaintStatus);
 router.patch("/:id/priority", updateComplaintPriority);
 

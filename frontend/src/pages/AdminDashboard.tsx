@@ -10,7 +10,7 @@ import PhotoGallery from "../components/PhotoGallery";
 import { CATEGORY_LABELS, STATUS_LABELS } from "../types/complaint";
 import type { ComplaintCategory, ComplaintStatus, Priority } from "../types/complaint";
 import type { AdminComplaint } from "../types/adminComplaint";
-import { Filter, X, ChevronDown, ChevronUp, AlertCircle, CheckCircle2, Clock, BarChart3, AlertTriangle } from "lucide-react";
+import { Filter, X, ChevronDown, ChevronUp, AlertCircle, CheckCircle2, Clock, BarChart3, AlertTriangle, Download } from "lucide-react";
 
 const STATUS_BADGE: Record<string, string> = {
     OPEN: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -106,6 +106,27 @@ export default function AdminDashboard() {
         setToDate("");
     }
 
+    async function handleDownloadCSV() {
+        try {
+            const params: Record<string, string> = {};
+            if (categoryFilter) params.category = categoryFilter;
+            if (statusFilter) params.status = statusFilter;
+            if (fromDate) params.from = fromDate;
+            if (toDate) params.to = toDate;
+
+            const res = await api.get("/admin/complaints/export", { params, responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'complaints_export.csv');
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode?.removeChild(link);
+        } catch (err) {
+            console.error("Failed to download CSV", err);
+        }
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-100 pb-12">
             <Navbar links={NAV_LINKS} />
@@ -188,6 +209,13 @@ export default function AdminDashboard() {
                         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">All Complaints</h2>
                         <p className="text-sm text-gray-500 font-medium mt-1">Manage and update resident requests</p>
                     </div>
+                    <button
+                        onClick={handleDownloadCSV}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800 rounded-xl text-sm font-bold shadow-sm transition-colors border border-indigo-200"
+                    >
+                        <Download className="w-4 h-4" />
+                        Download Report
+                    </button>
                 </div>
 
                 <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 p-5 mb-6 flex flex-wrap gap-4 items-end shadow-sm">

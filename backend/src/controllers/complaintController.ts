@@ -3,6 +3,22 @@ import { prisma } from "../config/prisma";
 import { createComplaintSchema } from "../utils/complaintSchemas";
 import { sendSuccess, sendError } from "../utils/response";
 import { uploadBufferToCloudinary } from "../utils/cloudinaryUpload";
+import type { Priority } from "@prisma/client";
+
+const EMERGENCY_KEYWORDS = [
+    "leak", "fire", "spark", "blood", "broken pipe", "urgent", "smoke",
+    "short circuit", "collapse", "gas", "smell", "flood", "water leak"
+];
+
+function determinePriority(description: string): Priority {
+    const lowerDesc = description.toLowerCase();
+    for (const kw of EMERGENCY_KEYWORDS) {
+        if (lowerDesc.includes(kw)) {
+            return "HIGH";
+        }
+    }
+    return "LOW";
+}
 
 // Resident creates a new complaint. Auto-creates the first history entry (null -> OPEN).
 export async function createComplaint(req: Request, res: Response) {
@@ -36,12 +52,15 @@ export async function createComplaint(req: Request, res: Response) {
         }
     }
 
+    const priority = determinePriority(description);
+
     const complaint = await prisma.complaint.create({
         data: {
             residentId,
             category,
             description,
             status: "OPEN",
+            priority,
             history: {
                 create: {
                     oldStatus: null,

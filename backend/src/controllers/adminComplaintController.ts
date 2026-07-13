@@ -176,3 +176,58 @@ export async function updateComplaintPriority(req: Request, res: Response) {
 
     return sendSuccess(res, updated);
 }
+
+// Admin: Export complaints to CSV based on filters
+export async function exportComplaints(req: Request, res: Response) {
+    const parsed = complaintFilterSchema.safeParse(req.query);
+    if (!parsed.success) {
+        return sendError(
+            res,
+            400,
+            "VALIDATION_ERROR",
+            parsed.error.issues.map((i) => i.message).join(", ")
+        );
+    }
+
+    const { category, status, from, to } = parsed.data;
+
+    const where: any = {};
+    if (category) where.category = category;
+    if (status) where.status = status;
+    if (from || to) {
+        where.createdAt = {};
+        if (from) where.createdAt.gte = new Date(`${from}T00:00:00.000Z`);
+        if (to) where.createdAt.lte = new Date(`${to}T23:59:59.999Z`);
+    }
+
+    const complaints = await prisma.complaint.findMany({
+        where,
+        include: {
+            resident: { select: { name: true, email: true } },
+        },
+        orderBy: { createdAt: "desc" },
+    });
+
+    const headers = ["ID", "Category", "Priority", "Status", "Description", "Resident Name", "Resident Email", "Created At"];
+    const rows = complaints.map(c => {
+        // Escape quotes and wrap in quotes for safe CSV parsing
+        const description = `"${c.description.replace(/"/g, '""')}"`;
+        const name = `"${c.resident.name.replace(/"/g, '""')}"`;
+        return [
+            c.id,
+            c.category,
+            c.priority,
+            c.status,
+            description,
+            name,
+            c.resident.email,
+            new Date(c.createdAt).toISOString()
+        ].join(",");
+    });
+
+    const csvContent = [headers.join(","), ...rows].join("\n");
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", 'attachment; filename="complaints_export.csv"');
+    return res.status(200).send(csvContent);
+}
