@@ -10,7 +10,7 @@ const EMERGENCY_KEYWORDS = [
     "short circuit", "collapse", "gas", "smell", "flood", "water leak"
 ];
 
-function determinePriority(description: string): Priority {
+export function determinePriority(description: string): Priority {
     const lowerDesc = description.toLowerCase();
     for (const kw of EMERGENCY_KEYWORDS) {
         if (lowerDesc.includes(kw)) {

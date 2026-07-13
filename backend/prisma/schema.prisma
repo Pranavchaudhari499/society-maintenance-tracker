@@ -12,6 +12,9 @@ model User {
   name          String
   email         String             @unique
   passwordHash  String
+  phone         String?
+  flatNo        String?
+  wing          String?
   role          Role               @default(RESIDENT)
   createdAt     DateTime           @default(now())
   statusChanges ComplaintHistory[] @relation("StatusChangedBy")

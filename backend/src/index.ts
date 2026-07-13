@@ -7,6 +7,9 @@ import adminComplaintRoutes from "./routes/adminComplaintRoutes";
 import settingsRoutes from "./routes/settingsRoutes";
 import noticeRoutes from "./routes/noticeRoutes";
 import dashboardRoutes from "./routes/dashboardRoutes";
+import streamRoutes from "./routes/streamRoutes";
+import chatbotRoutes from "./routes/chatbotRoutes";
+import profileRoutes from "./routes/profileRoutes";
 
 dotenv.config();
 
@@ -26,6 +29,9 @@ app.use("/admin/complaints", adminComplaintRoutes);
 app.use("/admin/settings", settingsRoutes);
 app.use("/notices", noticeRoutes);
 app.use("/admin/dashboard", dashboardRoutes);
+app.use("/stream", streamRoutes);
+app.use("/chatbot", chatbotRoutes);
+app.use("/profile", profileRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);

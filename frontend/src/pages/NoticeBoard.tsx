@@ -7,6 +7,7 @@ import { Pin, Bell } from "lucide-react";
 const NAV_LINKS = [
     { label: "My Complaints", to: "/resident" },
     { label: "Notice Board", to: "/resident/notices" },
+    { label: "Profile", to: "/resident/profile" },
 ];
 
 function formatDate(dateStr: string) {
@@ -26,6 +27,11 @@ export default function NoticeBoard() {
 
     useEffect(() => {
         loadNotices();
+
+        const handleRefresh = () => loadNotices();
+        window.addEventListener('REFRESH_DATA', handleRefresh);
+        
+        return () => window.removeEventListener('REFRESH_DATA', handleRefresh);
     }, []);
 
     async function loadNotices() {

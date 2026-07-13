@@ -9,6 +9,7 @@ import { sendSuccess, sendError } from "../utils/response";
 import { getCurrentOverdueThresholdDays } from "./settingsController";
 import { sendEmail } from "../utils/sendEmail";
 import { statusChangeTemplate } from "../utils/emailTemplates";
+import { notifyUser } from "./streamController";
 
 // Admin: list all complaints with optional filters (category, status, date range).
 // Overdue complaints (unresolved + past the configurable threshold) are computed
@@ -132,6 +133,12 @@ export async function updateComplaintStatus(req: Request, res: Response) {
             note,
         }),
     }).catch((err) => console.error("[email] status change notification error:", err));
+
+    // Notify the user in real-time
+    notifyUser(updated.residentId, "STATUS_UPDATE", {
+        id: updated.id,
+        status: updated.status,
+    });
 
     return sendSuccess(res, updated);
 }

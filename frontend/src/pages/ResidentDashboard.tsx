@@ -17,6 +17,7 @@ const STATUS_BADGE: Record<string, string> = {
 const NAV_LINKS = [
     { label: "My Complaints", to: "/resident" },
     { label: "Notice Board", to: "/resident/notices" },
+    { label: "Profile", to: "/resident/profile" },
 ];
 
 export default function ResidentDashboard() {
@@ -28,6 +29,11 @@ export default function ResidentDashboard() {
 
     useEffect(() => {
         loadComplaints();
+
+        const handleRefresh = () => loadComplaints();
+        window.addEventListener('REFRESH_DATA', handleRefresh);
+        
+        return () => window.removeEventListener('REFRESH_DATA', handleRefresh);
     }, []);
 
     async function loadComplaints() {

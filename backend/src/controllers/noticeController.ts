@@ -4,6 +4,7 @@ import { createNoticeSchema, updateNoticeSchema } from "../utils/noticeSchemas";
 import { sendSuccess, sendError } from "../utils/response";
 import { sendEmail } from "../utils/sendEmail";
 import { importantNoticeTemplate } from "../utils/emailTemplates";
+import { broadcast } from "./streamController";
 
 // Any authenticated user (resident or admin) can view the notice board.
 // Important notices are pinned to the top; within each group, newest first.
@@ -64,6 +65,12 @@ export async function createNotice(req: Request, res: Response) {
                 console.error("[email] failed to fetch residents for notice notification", err)
             );
     }
+
+    broadcast("NEW_NOTICE", {
+        id: notice.id,
+        title: notice.title,
+        isImportant: notice.isImportant
+    });
 
     return sendSuccess(res, notice, 201);
 }
