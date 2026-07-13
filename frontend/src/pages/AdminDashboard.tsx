@@ -149,7 +149,7 @@ export default function AdminDashboard() {
                             <p className="text-4xl font-black text-gray-900 tracking-tight">{dashboardData.total}</p>
                         </div>
                         <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border border-red-100 p-6 flex flex-col justify-center shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <div className="absolute top-0 right-0 p-4 opacity-30 group-hover:opacity-40 transition-opacity">
                                 <AlertTriangle className="w-16 h-16 text-red-600" />
                             </div>
                             <h3 className="text-sm font-semibold text-red-800 uppercase tracking-wider mb-2">Overdue</h3>
@@ -199,6 +199,18 @@ export default function AdminDashboard() {
                                     }}
                                     options={{ cutout: '75%', plugins: { legend: { display: false }, tooltip: { padding: 12, cornerRadius: 8 } } }}
                                 />
+                            </div>
+                        </div>
+                        {/* Category Breakdown */}
+                        <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 p-6 col-span-1 md:col-span-4 shadow-sm hover:shadow-md transition-shadow mt-2">
+                            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Category Breakdown</h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                                {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+                                    <div key={key} className="bg-white/80 rounded-xl p-4 border border-gray-100 shadow-sm flex flex-col items-center justify-center hover:border-indigo-200 transition-colors">
+                                        <span className="text-gray-500 text-xs font-semibold uppercase mb-1 text-center">{label}</span>
+                                        <span className="text-2xl font-bold text-indigo-600">{dashboardData.byCategory?.[key] || 0}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
