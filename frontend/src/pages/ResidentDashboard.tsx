@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import ComplaintTimeline from "../components/ComplaintTimeline";
 import Navbar from "../components/Navbar";
+import PhotoGallery from "../components/PhotoGallery";
 import { CATEGORY_LABELS, STATUS_LABELS } from "../types/complaint";
 import type { Complaint } from "../types/complaint";
 
@@ -93,6 +94,7 @@ export default function ResidentDashboard() {
 
                                 {expandedId === c.id && (
                                     <div className="border-t border-gray-100 p-4 bg-gray-50">
+                                        <PhotoGallery media={c.media} />
                                         <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wide">
                                             Status Timeline
                                         </p>

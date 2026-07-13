@@ -3,6 +3,7 @@ import { api } from "../api/client";
 import Navbar from "../components/Navbar";
 import StatusUpdateModal from "../components/StatusUpdateModal";
 import ComplaintTimeline from "../components/ComplaintTimeline";
+import PhotoGallery from "../components/PhotoGallery";
 import { CATEGORY_LABELS, STATUS_LABELS } from "../types/complaint";
 import type { ComplaintCategory, ComplaintStatus, Priority } from "../types/complaint";
 import type { AdminComplaint } from "../types/adminComplaint";
@@ -206,7 +207,10 @@ export default function AdminDashboard() {
 
                                 {expandedId === c.id && (
                                     <div className="border-t border-gray-100 p-4 bg-gray-50">
-                                        <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wide">Status Timeline</p>
+                                        <PhotoGallery media={c.media} />
+                                        <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wide">
+                                            Status Timeline
+                                        </p>
                                         <ComplaintTimeline history={c.history} />
                                     </div>
                                 )}
