@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { prisma } from "../config/prisma";
 import { createNoticeSchema, updateNoticeSchema } from "../utils/noticeSchemas";
 import { sendSuccess, sendError } from "../utils/response";
+import { sendEmail } from "../utils/sendEmail";
+import { importantNoticeTemplate } from "../utils/emailTemplates";
 
 // Any authenticated user (resident or admin) can view the notice board.
 // Important notices are pinned to the top; within each group, newest first.
@@ -35,6 +37,33 @@ export async function createNotice(req: Request, res: Response) {
         data: { title, body, isImportant, postedBy: adminId },
         include: { poster: { select: { id: true, name: true } } },
     });
+
+    if (isImportant) {
+        // Fire-and-forget: email all residents
+        prisma.user
+            .findMany({
+                where: { role: "RESIDENT" },
+                select: { name: true, email: true },
+            })
+            .then((residents) => {
+                for (const resident of residents) {
+                    sendEmail({
+                        to: resident.email,
+                        subject: `Important Notice: ${title}`,
+                        html: importantNoticeTemplate({
+                            residentName: resident.name,
+                            title,
+                            body,
+                        }),
+                    }).catch((err) =>
+                        console.error(`[email] notice email error for ${resident.email}:`, err)
+                    );
+                }
+            })
+            .catch((err) =>
+                console.error("[email] failed to fetch residents for notice notification", err)
+            );
+    }
 
     return sendSuccess(res, notice, 201);
 }

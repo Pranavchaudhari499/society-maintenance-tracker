@@ -22,6 +22,7 @@ const PRIORITY_BADGE: Record<Priority, string> = {
 
 const NAV_LINKS = [
     { label: "Complaints", to: "/admin" },
+    { label: "Notices", to: "/admin/notices" },
     { label: "Settings", to: "/admin/settings" },
 ];
 

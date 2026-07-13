@@ -13,7 +13,10 @@ const STATUS_BADGE: Record<string, string> = {
     RESOLVED: "bg-green-100 text-green-800",
 };
 
-const NAV_LINKS = [{ label: "My Complaints", to: "/resident" }];
+const NAV_LINKS = [
+    { label: "My Complaints", to: "/resident" },
+    { label: "Notice Board", to: "/resident/notices" },
+];
 
 export default function ResidentDashboard() {
     const navigate = useNavigate();

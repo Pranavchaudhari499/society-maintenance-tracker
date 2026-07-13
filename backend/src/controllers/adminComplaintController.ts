@@ -7,8 +7,13 @@ import {
 } from "../utils/adminComplaintSchemas";
 import { sendSuccess, sendError } from "../utils/response";
 import { getCurrentOverdueThresholdDays } from "./settingsController";
+import { sendEmail } from "../utils/sendEmail";
+import { statusChangeTemplate } from "../utils/emailTemplates";
 
 // Admin: list all complaints with optional filters (category, status, date range).
+// Overdue complaints (unresolved + past the configurable threshold) are computed
+// dynamically per request and sorted to the top, rather than stored as a flag,
+// so the result is never stale even if the threshold changes.
 export async function getAllComplaints(req: Request, res: Response) {
     const parsed = complaintFilterSchema.safeParse(req.query);
     if (!parsed.success) {
@@ -54,14 +59,13 @@ export async function getAllComplaints(req: Request, res: Response) {
         return { ...c, isOverdue };
     });
 
-    // Overdue complaints surface first; within each group, keep the existing createdAt desc order.
     withOverdue.sort((a, b) => {
         if (a.isOverdue !== b.isOverdue) return a.isOverdue ? -1 : 1;
         return 0;
     });
 
     return sendSuccess(res, withOverdue);
-}   
+}
 
 // Admin: update complaint status. Blocked once complaint is RESOLVED.
 export async function updateComplaintStatus(req: Request, res: Response) {
@@ -115,6 +119,19 @@ export async function updateComplaintStatus(req: Request, res: Response) {
             media: true,
         },
     });
+
+    // Fire-and-forget: email failure must never block the status update itself.
+    sendEmail({
+        to: updated.resident.email,
+        subject: `Complaint Update: ${updated.status.replace("_", " ")}`,
+        html: statusChangeTemplate({
+            residentName: updated.resident.name,
+            category: updated.category,
+            description: updated.description,
+            newStatus: updated.status,
+            note,
+        }),
+    }).catch((err) => console.error("[email] status change notification error:", err));
 
     return sendSuccess(res, updated);
 }
