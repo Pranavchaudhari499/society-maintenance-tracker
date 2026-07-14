@@ -71,27 +71,27 @@ export default function Navbar({ links }: { links: NavLink[] }) {
     };
 
     return (
-        <div className="sticky top-6 z-50 flex justify-center px-4 mb-10 pointer-events-none">
-            <nav className="pointer-events-auto bg-white/60 backdrop-blur-xl border border-white/50 shadow-[0_8px_32px_0_rgba(79,70,229,0.08)] rounded-full px-2 py-2 flex items-center justify-between w-full max-w-5xl transition-all duration-300">
+        <div className="sticky top-4 sm:top-6 z-50 flex justify-center px-2 sm:px-4 mb-6 sm:mb-10 pointer-events-none">
+            <nav className="pointer-events-auto bg-white/60 backdrop-blur-xl border border-white/50 shadow-[0_8px_32px_0_rgba(79,70,229,0.08)] rounded-full px-2 py-1.5 sm:py-2 flex items-center justify-between w-full max-w-5xl transition-all duration-300">
                 {/* Logo Section */}
-                <div className="flex items-center gap-3 pl-4 pr-6 border-r border-gray-200/60">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-500 flex items-center justify-center shadow-[0_4px_12px_rgba(79,70,229,0.4)]">
+                <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 pr-3 sm:pr-6 border-r border-gray-200/60 shrink-0">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-500 flex items-center justify-center shadow-[0_4px_12px_rgba(79,70,229,0.4)]">
                         <Building2 className="w-4 h-4 text-white" />
                     </div>
-                    <span className="font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 to-purple-600 text-sm tracking-wide uppercase">
+                    <span className="font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 to-purple-600 text-sm tracking-wide uppercase hidden md:block">
                         Society Tracker
                     </span>
                 </div>
 
                 {/* Navigation Links */}
-                <div className="flex items-center gap-1.5 px-6 flex-1">
+                <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-6 flex-1 overflow-x-auto no-scrollbar">
                     {links.map((link) => {
                         const active = location.pathname === link.to;
                         return (
                             <Link
                                 key={link.to}
                                 to={link.to}
-                                className={`relative px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${active
+                                className={`relative px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 whitespace-nowrap ${active
                                         ? "text-indigo-700 bg-white shadow-[0_4px_16px_rgba(79,70,229,0.12)] ring-1 ring-indigo-50/50 transform -translate-y-0.5"
                                         : "text-gray-500 hover:text-gray-900 hover:bg-gray-100/50"
                                     }`}
@@ -160,11 +160,11 @@ export default function Navbar({ links }: { links: NavLink[] }) {
                         )}
                     </div>
 
-                    <div className="flex items-center gap-3 bg-white/50 rounded-full py-1.5 px-4 border border-white/80 shadow-sm">
+                    <div className="flex items-center gap-3 bg-white/50 rounded-full py-1.5 px-2 sm:px-4 border border-white/80 shadow-sm">
                         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-indigo-700 font-bold text-xs ring-2 ring-white shadow-sm">
                             {user?.name?.charAt(0).toUpperCase()}
                         </div>
-                        <span className="text-sm font-semibold text-gray-700">{user?.name?.split(' ')[0]}</span>
+                        <span className="text-sm font-semibold text-gray-700 hidden md:block">{user?.name?.split(' ')[0]}</span>
                     </div>
                     
                     <button 
