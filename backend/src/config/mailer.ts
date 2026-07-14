@@ -1,9 +1,9 @@
-import nodemailer from "nodemailer";
+import sgMail from '@sendgrid/mail';
 
-export const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_APP_PASSWORD,
-    },
-});
+if (process.env.SENDGRID_API_KEY) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+} else {
+    console.warn("SENDGRID_API_KEY is not set in environment variables");
+}
+
+export { sgMail };
