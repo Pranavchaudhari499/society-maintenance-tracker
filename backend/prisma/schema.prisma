@@ -20,6 +20,7 @@ model User {
   statusChanges ComplaintHistory[] @relation("StatusChangedBy")
   complaints    Complaint[]        @relation("ResidentComplaints")
   noticesPosted Notice[]           @relation("NoticePostedBy")
+  notifications Notification[]     @relation("UserNotifications")
 
   @@map("users")
 }
@@ -114,4 +115,18 @@ enum Priority {
   LOW
   MEDIUM
   HIGH
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("notifications")
 }

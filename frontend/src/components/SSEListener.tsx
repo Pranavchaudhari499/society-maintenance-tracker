@@ -16,7 +16,14 @@ export default function SSEListener() {
             try {
                 const parsed = JSON.parse(event.data);
                 
-                if (parsed.type === "STATUS_UPDATE") {
+                if (parsed.type === "NOTIFICATION") {
+                    toast.success(parsed.data.message, {
+                        duration: 5000,
+                        icon: '🔔',
+                    });
+                    window.dispatchEvent(new CustomEvent('NEW_NOTIFICATION', { detail: parsed.data }));
+                    window.dispatchEvent(new CustomEvent('REFRESH_DATA'));
+                } else if (parsed.type === "STATUS_UPDATE") {
                     toast.success(`Complaint status updated to ${parsed.data.status.replace("_", " ")}`, {
                         duration: 5000,
                         icon: '🔔',

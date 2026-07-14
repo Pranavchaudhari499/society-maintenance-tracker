@@ -134,11 +134,17 @@ export async function updateComplaintStatus(req: Request, res: Response) {
         }),
     }).catch((err) => console.error("[email] status change notification error:", err));
 
-    // Notify the user in real-time
-    notifyUser(updated.residentId, "STATUS_UPDATE", {
-        id: updated.id,
-        status: updated.status,
+    // Create a persistent notification in the database
+    const notification = await prisma.notification.create({
+        data: {
+            userId: updated.residentId,
+            title: "Complaint Status Updated",
+            message: `Your complaint regarding ${updated.category.toLowerCase().replace('_', ' ')} has been marked as ${updated.status.replace('_', ' ')}.`,
+        }
     });
+
+    // Notify the user in real-time with the full notification object
+    notifyUser(updated.residentId, "NOTIFICATION", notification);
 
     return sendSuccess(res, updated);
 }
