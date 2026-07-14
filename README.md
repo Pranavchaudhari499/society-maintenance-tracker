@@ -4,7 +4,7 @@ A platform for apartment societies to manage maintenance complaints end-to-end: 
 
 ## Quick Links
 
-- **Live URL:** `https://society-maintenance-tracker-vert.vercel.app/login`
+- **Live URL:** [https://society-maintenance-tracker-vert.vercel.app/login](https://society-maintenance-tracker-vert.vercel.app/login)
 
 ### Test Credentials
 You can easily log in and test the deployed application using these seeded admin account:
@@ -20,7 +20,7 @@ You can easily log in and test the deployed application using these seeded admin
 | ORM | Prisma |
 | Frontend | React, TypeScript, Vite, Tailwind CSS |
 | Photo Storage | Cloudinary |
-| Email | Nodemailer (Gmail SMTP) |
+| Email | Twilio SendGrid (Nodemailer) |
 | Auth | JWT, bcrypt |
 | Validation | Zod |
 | Hosting | Backend + DB on Render, Frontend on Vercel |
@@ -144,7 +144,7 @@ DEFAULT_OVERDUE_THRESHOLD_DAYS=7
 
 **`frontend/.env`**
 ```
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=""
 ```
 
 ## Seed Data
