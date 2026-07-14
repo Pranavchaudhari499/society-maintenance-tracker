@@ -2,6 +2,15 @@
 
 A platform for apartment societies to manage maintenance complaints end-to-end: residents raise complaints with photos, admins triage and resolve them through a tracked status workflow, and everyone stays informed through a notice board and email notifications.
 
+## Quick Links
+
+- **Live URL:** `https://society-maintenance-tracker-vert.vercel.app/login`
+
+### Test Credentials
+You can easily log in and test the deployed application using these seeded admin account:
+
+- **Admin Account**: `admin@greenparksociety.com` | Password: `Admin@2026`
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -224,10 +233,9 @@ See `backend/prisma/schema.prisma` for the full source of truth. Key design poin
 - **Backend + Database**: Render (Web Service + free PostgreSQL)
 - **Frontend**: Vercel
 
-Live URL: `<<< paste your deployed frontend URL here >>>`
 
 ## Known Simplifications
 
-- Email delivery uses a personal Gmail account via an App Password (free-tier constraint) — a production system would use a transactional email provider (e.g. SES, Postmark).
+- Email delivery is configured using Twilio SendGrid instead of a personal Gmail account, making the system production-ready and avoiding rate limits.
 - Overdue detection is computed per-request rather than cached, which is fine at this scale but would warrant a materialized view or scheduled job at much higher complaint volumes.
 - The AI assistant is an experimental bonus feature layered on top of the core spec. Tool-call outputs (e.g. complaint creation) should be validated through the same rules as the standard API before reaching the database — recommended as a follow-up hardening step.
