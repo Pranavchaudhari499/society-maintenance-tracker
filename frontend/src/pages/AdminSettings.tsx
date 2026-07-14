@@ -16,7 +16,6 @@ export default function AdminSettings() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
 
     useEffect(() => {
         loadThreshold();
@@ -37,7 +36,6 @@ export default function AdminSettings() {
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
         setError("");
-        setSuccess("");
         setSaving(true);
         try {
             await api.patch("/admin/settings/overdue-threshold", { days });

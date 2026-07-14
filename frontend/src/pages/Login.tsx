@@ -9,14 +9,12 @@ import toast from 'react-hot-toast';
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
-        setError("");
         setLoading(true);
 
         try {
@@ -26,12 +24,10 @@ export default function Login() {
             );
             const { user, token } = res.data.data;
             login(user, token);
-            toast.success('Successfully logged in!');
-            navigate(user.role === "ADMIN" ? "/admin" : "/resident");
+            toast.success("Welcome back!");
+            navigate(res.data.data.user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard");
         } catch (err: any) {
-            const msg = err.response?.data?.error?.message || "Something went wrong. Please try again.";
-            setError(msg);
-            toast.error(msg);
+            toast.error(err.response?.data?.error?.message || "Login failed");
         } finally {
             setLoading(false);
         }

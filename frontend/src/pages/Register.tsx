@@ -3,21 +3,19 @@ import type { FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
-import type { AuthResponse, Role } from "../types/auth";
+import type { AuthResponse } from "../types/auth";
 import toast from 'react-hot-toast';
 
 export default function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
-        setError("");
         setLoading(true);
 
         try {
@@ -27,12 +25,10 @@ export default function Register() {
             );
             const { user, token } = res.data.data;
             login(user, token);
-            toast.success('Successfully registered!');
-            navigate(user.role === "ADMIN" ? "/admin" : "/resident");
+            toast.success("Registration successful!");
+            navigate("/dashboard");
         } catch (err: any) {
-            const msg = err.response?.data?.error?.message || "Something went wrong. Please try again.";
-            setError(msg);
-            toast.error(msg);
+            toast.error(err.response?.data?.error?.message || "Registration failed");
         } finally {
             setLoading(false);
         }
