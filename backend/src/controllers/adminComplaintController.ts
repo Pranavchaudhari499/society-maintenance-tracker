@@ -60,9 +60,25 @@ export async function getAllComplaints(req: Request, res: Response) {
         return { ...c, isOverdue };
     });
 
+    const priorityWeight: Record<string, number> = { HIGH: 3, MEDIUM: 2, LOW: 1 };
+
     withOverdue.sort((a, b) => {
+        const aIsClosed = a.status === "RESOLVED";
+        const bIsClosed = b.status === "RESOLVED";
+
+        // 1. Resolved complaints always at the very bottom
+        if (aIsClosed !== bIsClosed) return aIsClosed ? 1 : -1;
+
+        // 2. Overdue complaints at the top (among unresolved)
         if (a.isOverdue !== b.isOverdue) return a.isOverdue ? -1 : 1;
-        return 0;
+
+        // 3. Higher priority first (HIGH > MEDIUM > LOW)
+        const aPriority = priorityWeight[a.priority] || 0;
+        const bPriority = priorityWeight[b.priority] || 0;
+        if (aPriority !== bPriority) return bPriority - aPriority;
+
+        // 4. Finally, most recent first
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
     return sendSuccess(res, withOverdue);

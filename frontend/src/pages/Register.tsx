@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useEffect } from "react";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import type { AuthResponse } from "../types/auth";
@@ -11,8 +12,14 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user) {
+            navigate(user.role === "ADMIN" ? "/admin" : "/resident", { replace: true });
+        }
+    }, [user, navigate]);
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();

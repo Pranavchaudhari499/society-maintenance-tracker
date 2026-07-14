@@ -20,6 +20,7 @@ A platform for apartment societies to manage maintenance complaints end-to-end: 
 
 - Role-based auth (Resident / Admin) with JWT
 - Residents raise complaints with category, description, and up to 5 photos
+- **Automated Emergency Routing**: The system analyzes complaint descriptions for critical keywords (e.g., "fire", "emergency") and automatically escalates them to **High Priority**.
 - Full status history on every complaint (Open → In Progress → Resolved), each change timestamped with an actor and optional note
 - Complaints are locked once Resolved — no further edits
 - Admin filtering by category, status, and date range
@@ -28,6 +29,7 @@ A platform for apartment societies to manage maintenance complaints end-to-end: 
 - Notice board with pinned "important" notices
 - Email notifications on complaint status change and on important notice posts
 - Admin dashboard: totals by status, by category, and overdue count
+- **Modern UI/UX**: Fully responsive, mobile-first design featuring a stunning glassmorphic 3D floating navigation pill, smooth gradients, and interactive micro-animations.
 - AI assistant chatbot (bonus, beyond spec) — dual-persona based on role: residents can describe an issue in natural language and the assistant can create a complaint on their behalf; admins can ask for live database metrics (counts by status/priority)
 ## Bonus Feature: AI Assistant
 
@@ -40,7 +42,7 @@ This is an experimental addition on top of the required feature set and is not p
 
 ## Project Structure
 
-\```
+```
 society-tracker/
 ├── backend/          # Express + TypeScript API
 │   ├── src/
@@ -60,7 +62,7 @@ society-tracker/
         ├── api/
         └── assets/
 
-\```
+```
 
 ## Setup Guide
 
@@ -72,7 +74,7 @@ society-tracker/
 
 ### 1. Clone and install
 
-\```bash
+```bash
 git clone <your-repo-url>
 cd society-tracker
 
@@ -81,7 +83,7 @@ npm install
 
 cd ../frontend
 npm install
-\```
+```
 
 ### 2. Configure environment variables
 
@@ -89,15 +91,15 @@ Copy `.env.example` to `.env` in both `backend/` and `frontend/`, and fill in th
 
 ### 3. Set up the database
 
-\```bash
+```bash
 cd backend
 npx prisma migrate deploy
 npx prisma db seed
-\```
+```
 
 ### 4. Run the app locally
 
-\```bash
+```bash
 # terminal 1
 cd backend
 npm run dev
@@ -105,14 +107,14 @@ npm run dev
 # terminal 2
 cd frontend
 npm run dev
-\```
+```
 
 Backend runs on `http://localhost:5000`, frontend on `http://localhost:5173`.
 
 ## Environment Variables
 
 **`backend/.env`**
-\```
+```
 PORT=5000
 DATABASE_URL="postgres://user:password@host:5432/dbname"
 
@@ -123,19 +125,18 @@ CLOUDINARY_CLOUD_NAME=""
 CLOUDINARY_API_KEY=""
 CLOUDINARY_API_SECRET=""
 
-EMAIL_USER="youraccount@gmail.com"
-EMAIL_APP_PASSWORD="your16charapppassword"
-EMAIL_FROM="Society Tracker <youraccount@gmail.com>"
+SENDGRID_API_KEY=
+EMAIL_FROM=""
 
 GROQ_API_KEY=""
 
 DEFAULT_OVERDUE_THRESHOLD_DAYS=7
-\```
+```
 
 **`frontend/.env`**
-\```
+```
 VITE_API_URL=http://localhost:5000
-\```
+```
 
 ## Seed Data
 
@@ -196,6 +197,13 @@ All responses follow the shape `{ success: boolean, data?: ..., error?: { code, 
 |---|---|---|---|
 | GET | `/admin/dashboard` | Admin | Totals by status, by category, and overdue count |
 
+### Notifications
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/notifications` | Authenticated | Fetch current user's notifications |
+| PATCH | `/notifications/:id/read` | Authenticated | Mark a specific notification as read |
+| PATCH | `/notifications/read-all` | Authenticated | Mark all notifications as read |
+
 ### AI Assistant (Bonus)
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
@@ -207,6 +215,7 @@ See `backend/prisma/schema.prisma` for the full source of truth. Key design poin
 
 - **`complaint_history`** is an append-only log of every status change (`old_status`, `new_status`, `changed_by`, `note`, `created_at`) — a complaint's current status is denormalized onto the `complaints` row for fast filtering, but the history table is the audit trail of record.
 - **`complaint_media`** is normalized into its own table (rather than a single `photo_url` column) to support multiple photos per complaint.
+- **`notifications`** acts as the persistence layer for the real-time Server-Sent Events engine, ensuring users never lose a notification even if they refresh the page.
 - **`settings`** is a generic key-value table, currently used for the admin-configurable overdue threshold, extensible to future settings without new migrations.
 - Overdue status is **never stored** — it's computed at query time from `created_at` and the current threshold, so it's always accurate even if the threshold changes.
 

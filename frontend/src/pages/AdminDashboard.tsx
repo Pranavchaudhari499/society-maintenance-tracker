@@ -320,8 +320,8 @@ export default function AdminDashboard() {
                                 className={`bg-white/80 backdrop-blur-sm rounded-2xl border overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 ${c.isOverdue ? "border-red-300 ring-2 ring-red-100" : "border-gray-200"
                                     }`}
                             >
-                                <div className="p-6">
-                                    <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+                                <div className="p-4 sm:p-6">
+                                    <div className="flex flex-col md:flex-row justify-between items-start gap-4 sm:gap-6">
                                         <div className="flex-1 cursor-pointer group" onClick={() => setExpandedId(expandedId === c.id ? null : c.id)}>
                                             <div className="flex items-center gap-2.5 mb-3 flex-wrap">
                                                 <span className="text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-2.5 py-1 rounded-md">
@@ -341,22 +341,22 @@ export default function AdminDashboard() {
                                                 )}
                                             </div>
                                             <p className="text-base text-gray-900 font-medium leading-relaxed group-hover:text-indigo-600 transition-colors">{c.description}</p>
-                                            <div className="flex items-center gap-4 mt-3 text-sm">
+                                            <div className="flex items-center gap-3 mt-4 text-sm flex-wrap">
                                                 <div className="flex items-center gap-1.5 text-gray-500">
-                                                    <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
+                                                    <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs shrink-0">
                                                         {c.resident.name.charAt(0).toUpperCase()}
                                                     </div>
-                                                    <span className="font-medium text-gray-700">{c.resident.name}</span>
-                                                    <span className="text-gray-400">({c.resident.email})</span>
+                                                    <span className="font-medium text-gray-700 truncate">{c.resident.name}</span>
+                                                    <span className="text-gray-400 truncate max-w-[150px] sm:max-w-none">({c.resident.email})</span>
                                                 </div>
-                                                <div className="flex items-center gap-1 text-gray-400">
+                                                <div className="flex items-center gap-1 text-gray-400 shrink-0">
                                                     <Clock className="w-3.5 h-3.5" />
                                                     {new Date(c.createdAt).toLocaleDateString()}
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="flex md:flex-col gap-3 items-end shrink-0 w-full md:w-auto">
+                                        <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-auto mt-2 md:mt-0">
                                             <select
                                                 value={c.priority}
                                                 disabled={c.status === "RESOLVED"}

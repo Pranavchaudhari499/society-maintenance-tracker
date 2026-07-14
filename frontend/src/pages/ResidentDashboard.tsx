@@ -4,7 +4,7 @@ import { api } from "../api/client";
 import ComplaintTimeline from "../components/ComplaintTimeline";
 import Navbar from "../components/Navbar";
 import PhotoGallery from "../components/PhotoGallery";
-import { Plus, Inbox, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Inbox, ChevronDown, ChevronUp, FileText, Activity, CheckCircle } from "lucide-react";
 import { CATEGORY_LABELS, STATUS_LABELS } from "../types/complaint";
 import type { Complaint } from "../types/complaint";
 
@@ -49,23 +49,68 @@ export default function ResidentDashboard() {
         }
     }
 
+    const totalComplaints = complaints.length;
+    const activeComplaints = complaints.filter(c => c.status === "OPEN" || c.status === "IN_PROGRESS").length;
+    const resolvedComplaints = complaints.filter(c => c.status === "RESOLVED").length;
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-100">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-100 pb-12">
             <Navbar links={NAV_LINKS} />
 
-            <div className="max-w-4xl mx-auto p-8">
-                <div className="flex justify-between items-center mb-8">
+            <div className="max-w-4xl mx-auto p-4 sm:p-8">
+                {/* Stats Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                    <div className="bg-white/80 backdrop-blur-xl p-5 rounded-2xl shadow-sm border border-white/50 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center shrink-0">
+                            <FileText className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Total Filed</p>
+                            <h3 className="text-2xl font-bold text-gray-900">{loading ? "-" : totalComplaints}</h3>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-white/80 backdrop-blur-xl p-5 rounded-2xl shadow-sm border border-white/50 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center shrink-0">
+                            <Activity className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Currently Active</p>
+                            <h3 className="text-2xl font-bold text-gray-900">{loading ? "-" : activeComplaints}</h3>
+                        </div>
+                    </div>
+
+                    <div className="bg-white/80 backdrop-blur-xl p-5 rounded-2xl shadow-sm border border-white/50 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <div className="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center shrink-0">
+                            <CheckCircle className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Resolved</p>
+                            <h3 className="text-2xl font-bold text-gray-900">{loading ? "-" : resolvedComplaints}</h3>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Quick Action Banner */}
+                <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl shadow-lg p-6 sm:p-8 mb-8 text-white flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div>
+                        <h3 className="text-xl sm:text-2xl font-bold mb-2 text-white">Need Maintenance?</h3>
+                        <p className="text-indigo-100 max-w-md text-sm sm:text-base">Raise a new complaint and our team will get it sorted out as quickly as possible.</p>
+                    </div>
+                    <button
+                        onClick={() => navigate("/resident/raise")}
+                        className="shrink-0 flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-xl font-bold shadow-md hover:bg-indigo-50 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 w-full sm:w-auto justify-center"
+                    >
+                        <Plus className="w-5 h-5" />
+                        Raise a New Complaint
+                    </button>
+                </div>
+
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">My Complaints</h2>
                         <p className="text-sm text-gray-500 font-medium mt-1">Track and manage your maintenance requests</p>
                     </div>
-                    <button
-                        onClick={() => navigate("/resident/raise")}
-                        className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md hover:bg-indigo-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
-                    >
-                        <Plus className="w-4 h-4" />
-                        Raise Complaint
-                    </button>
                 </div>
 
                 {error && (
