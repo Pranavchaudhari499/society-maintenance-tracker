@@ -25,7 +25,7 @@ export default function Login() {
             const { user, token } = res.data.data;
             login(user, token);
             toast.success("Welcome back!");
-            navigate(res.data.data.user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard");
+            navigate(res.data.data.user.role === "ADMIN" ? "/admin" : "/resident");
         } catch (err: any) {
             toast.error(err.response?.data?.error?.message || "Login failed");
         } finally {

@@ -26,7 +26,7 @@ export default function Register() {
             const { user, token } = res.data.data;
             login(user, token);
             toast.success("Registration successful!");
-            navigate("/dashboard");
+            navigate("/resident");
         } catch (err: any) {
             toast.error(err.response?.data?.error?.message || "Registration failed");
         } finally {
