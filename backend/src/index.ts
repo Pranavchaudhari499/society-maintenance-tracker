@@ -14,6 +14,10 @@ import profileRoutes from "./routes/profileRoutes";
 dotenv.config();
 
 const app = express();
+
+// Trust Render's reverse proxy for correct IP identification in rate limiting
+app.set("trust proxy", 1);
+
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
