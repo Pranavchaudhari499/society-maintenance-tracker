@@ -17,7 +17,7 @@ An end-to-end platform where residents raise and track maintenance complaints wi
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 ![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
 
-[🌐 Live App](https://society-maintenance-tracker-vert.vercel.app/login) · [⚙️ API Base URL](#) · [📘 API Docs](#api-documentation) · [🎥 Demo Video](#)
+[🌐 Live App](https://society-maintenance-tracker-vert.vercel.app/login) · [⚙️ API Base URL](#) · [📘 API Docs](#api-documentation)
 
 </div>
 
@@ -27,7 +27,6 @@ An end-to-end platform where residents raise and track maintenance complaints wi
 | Role | Email | Password |
 |---|---|---|
 | Admin | `admin@greenparksociety.com` | `Admin@2026` |
-| Resident | `amit.kulkarni@example.com` | `resident123` |
 
 > **Note:** Email notifications may land in the **Spam/Junk folder** rather than the inbox, since the sending domain isn't verified with custom DNS. This is expected — please check Spam when testing status-change or notice emails.
 
