@@ -1,29 +1,35 @@
-# Society Maintenance Tracker
+<div align="center">
 
-A platform for apartment societies to manage maintenance complaints end-to-end: residents raise complaints with photos, admins triage and resolve them through a tracked status workflow, and everyone stays informed through a notice board and email notifications.
+# 🏢 Society Maintenance Tracker
 
-## Quick Links
+**AI-Assisted Maintenance Complaint Management Platform**
+Built with Node.js, Express, React & PostgreSQL
 
-- **Live URL:** [https://society-maintenance-tracker-vert.vercel.app/login](https://society-maintenance-tracker-vert.vercel.app/login)
+An end-to-end platform where residents raise and track maintenance complaints with photo evidence, admins manage them through a full status-history workflow with priority and overdue detection, and everyone stays informed through a notice board and automated email notifications.
 
-### Test Credentials
-You can easily log in and test the deployed application using these seeded admin account:
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
 
-- **Admin Account**: `admin@greenparksociety.com` | Password: `Admin@2026`
+[🌐 Live App](https://society-maintenance-tracker-vert.vercel.app/login) · [⚙️ API Base URL](#) · [📘 API Docs](#api-documentation) · [🎥 Demo Video](#)
 
-## Tech Stack
+</div>
 
-| Layer | Technology |
-|---|---|
-| Backend | Node.js, Express, TypeScript |
-| Database | PostgreSQL (hosted on Render) |
-| ORM | Prisma |
-| Frontend | React, TypeScript, Vite, Tailwind CSS |
-| Photo Storage | Cloudinary |
-| Email | Twilio SendGrid (Nodemailer) |
-| Auth | JWT, bcrypt |
-| Validation | Zod |
-| Hosting | Backend + DB on Render, Frontend on Vercel |
+---
+### 🔑 Test Credentials
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@greenparksociety.com` | `Admin@2026` |
+| Resident | `amit.kulkarni@example.com` | `resident123` |
+
+> **Note:** Email notifications may land in the **Spam/Junk folder** rather than the inbox, since the sending domain isn't verified with custom DNS. This is expected — please check Spam when testing status-change or notice emails.
 
 ## Features
 
@@ -31,6 +37,7 @@ You can easily log in and test the deployed application using these seeded admin
 - Residents raise complaints with category, description, and up to 5 photos
 - **Automated Emergency Routing**: The system analyzes complaint descriptions for critical keywords (e.g., "fire", "emergency") and automatically escalates them to **High Priority**.
 - Full status history on every complaint (Open → In Progress → Resolved), each change timestamped with an actor and optional note
+- In-app notifications: users receive a persisted notification (read/unread) whenever their complaint status changes or an important notice is posted
 - Complaints are locked once Resolved — no further edits
 - Admin filtering by category, status, and date range
 - Priority levels (Low / Medium / High), admin-settable
@@ -48,6 +55,39 @@ Beyond the core spec, the app includes an AI-powered chatbot (`POST /chatbot`) u
 - **Admin view**: a data-analyst-style assistant that can summarize live dashboard metrics on request
 
 This is an experimental addition on top of the required feature set and is not part of the core evaluated scope. Requires a free API key from [console.groq.com](https://console.groq.com).
+
+## 🏗️ System Architecture
+
+```mermaid
+flowchart TD
+    subgraph Client["Client — Vercel"]
+        A["React + Vite + TypeScript<br/>Tailwind CSS"]
+    end
+
+    subgraph Server["Backend — Render"]
+        B["Express + TypeScript API"]
+        B1["JWT Auth Middleware"]
+        B2["Zod Validation Layer"]
+        B3["Prisma ORM"]
+    end
+
+    subgraph Data["Data Layer"]
+        C[("PostgreSQL<br/>Render")]
+    end
+
+    subgraph External["External Services"]
+        D["Cloudinary<br/>Photo Storage"]
+        E["Email API<br/>Status & Notice Alerts"]
+        F["Groq LLM<br/>AI Assistant (bonus)"]
+    end
+
+    A -- "HTTPS + JWT" --> B
+    B --> B1 --> B2 --> B3
+    B3 --> C
+    B -- "Upload photos" --> D
+    B -- "Send notifications" --> E
+    B -- "Chatbot requests" --> F
+```
 
 ## Project Structure
 
@@ -72,6 +112,104 @@ society-tracker/
         └── assets/
 
 ```
+
+## 🗄️ Database Schema
+
+```mermaid
+erDiagram
+    USERS ||--o{ COMPLAINTS : raises
+    USERS ||--o{ COMPLAINT_HISTORY : "acts on"
+    USERS ||--o{ NOTICES : posts
+    USERS ||--o{ NOTIFICATIONS : receives
+    COMPLAINTS ||--o{ COMPLAINT_MEDIA : has
+    COMPLAINTS ||--o{ COMPLAINT_HISTORY : has
+
+    USERS {
+        uuid id PK
+        string name
+        string email UK
+        string passwordHash
+        string phone
+        string flatNo
+        string wing
+        enum role
+        datetime createdAt
+    }
+    COMPLAINTS {
+        uuid id PK
+        uuid residentId FK
+        enum category
+        string description
+        enum status
+        enum priority
+        datetime createdAt
+        datetime updatedAt
+    }
+    COMPLAINT_MEDIA {
+        uuid id PK
+        uuid complaintId FK
+        string url
+        string type
+        datetime uploadedAt
+    }
+    COMPLAINT_HISTORY {
+        uuid id PK
+        uuid complaintId FK
+        enum oldStatus
+        enum newStatus
+        uuid changedBy FK
+        string note
+        datetime createdAt
+    }
+    NOTICES {
+        uuid id PK
+        string title
+        string body
+        boolean isImportant
+        uuid postedBy FK
+        datetime createdAt
+    }
+    NOTIFICATIONS {
+        uuid id PK
+        uuid userId FK
+        string title
+        string message
+        boolean isRead
+        datetime createdAt
+    }
+    SETTINGS {
+        uuid id PK
+        string key UK
+        string value
+        datetime updatedAt
+    }
+```
+
+## 📸 Screenshots
+
+### Admin View
+
+| Dashboard & Analytics | Complaint Management |
+|---|---|
+| ![Admin Dashboard](docs/screenshots/admin-dashboard.png) | ![Admin Complaints](docs/screenshots/admin-complaints.png) |
+
+| Notice Management |
+|---|
+| ![Admin Notices](docs/screenshots/admin-notices.png) |
+
+### Resident View
+
+| Dashboard | My Complaints |
+|---|---|
+| ![Resident Dashboard](docs/screenshots/resident-dashboard.png) | ![Resident Complaints](docs/screenshots/resident-complaints.png) |
+
+| Raise a Complaint | Complaint Status Timeline |
+|---|---|
+| ![Raise Complaint](docs/screenshots/resident-raise-complaint.png) | ![Complaint Status](docs/screenshots/resident-complaint-status.png) |
+
+| AI Assistant Chatbot |
+|---|
+| ![Chatbot](docs/screenshots/resident-chatbot.png) |
 
 ## Setup Guide
 
@@ -216,17 +354,8 @@ All responses follow the shape `{ success: boolean, data?: ..., error?: { code, 
 ### AI Assistant (Bonus)
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
-| POST | `/chatbot` | Resident or Admin | Role-aware assistant. Residents get complaint support with a `create_complaint` tool
+| POST | `/chatbot` | Resident or Admin | Role-aware assistant — residents get a `create_complaint` tool for logging issues via chat, admins get live dashboard metric summaries |
 
-## Database Schema
-
-See `backend/prisma/schema.prisma` for the full source of truth. Key design points:
-
-- **`complaint_history`** is an append-only log of every status change (`old_status`, `new_status`, `changed_by`, `note`, `created_at`) — a complaint's current status is denormalized onto the `complaints` row for fast filtering, but the history table is the audit trail of record.
-- **`complaint_media`** is normalized into its own table (rather than a single `photo_url` column) to support multiple photos per complaint.
-- **`notifications`** acts as the persistence layer for the real-time Server-Sent Events engine, ensuring users never lose a notification even if they refresh the page.
-- **`settings`** is a generic key-value table, currently used for the admin-configurable overdue threshold, extensible to future settings without new migrations.
-- Overdue status is **never stored** — it's computed at query time from `created_at` and the current threshold, so it's always accurate even if the threshold changes.
 
 ## Deployment
 
@@ -236,6 +365,8 @@ See `backend/prisma/schema.prisma` for the full source of truth. Key design poin
 
 ## Known Simplifications
 
-- Email delivery is configured using Twilio SendGrid instead of a personal Gmail account, making the system production-ready and avoiding rate limits.
+- Email is sent via SendGrid's HTTP API rather than SMTP, since Render's free tier blocks outbound SMTP connections — this was a deliberate architectural choice made after initially hitting that restriction.
+- Email notifications may land in recipients' Spam folder rather than the inbox, since the sending domain isn't verified with custom DNS (would require owning and configuring a domain, out of scope here). Delivery itself is confirmed working — this is purely an inbox-placement issue common to any unverified sender.
+- SendGrid's current free plan is a 60-day trial rather than a permanent free tier; this is sufficient for development and evaluation but would need a paid plan or a permanent-free alternative (e.g. Resend, Brevo) for long-term production use.
 - Overdue detection is computed per-request rather than cached, which is fine at this scale but would warrant a materialized view or scheduled job at much higher complaint volumes.
 - The AI assistant is an experimental bonus feature layered on top of the core spec. Tool-call outputs (e.g. complaint creation) should be validated through the same rules as the standard API before reaching the database — recommended as a follow-up hardening step.
