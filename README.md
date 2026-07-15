@@ -191,25 +191,25 @@ erDiagram
 
 | Dashboard & Analytics | Complaint Management |
 |---|---|
-| ![Admin Dashboard](docs/screenshots/admin-dashboard.png) | ![Admin Complaints](docs/screenshots/admin-complaints.png) |
+| ![Admin Dashboard](docs/screenshots/admin-dashboard.png.png) | ![Admin Complaints](docs/screenshots/admin-complaints.png.png) |
 
 | Notice Management |
 |---|
-| ![Admin Notices](docs/screenshots/admin-notices.png) |
+| ![Admin Notices](docs/screenshots/admin-notices.png.png) |
 
 ### Resident View
 
 | Dashboard | My Complaints |
 |---|---|
-| ![Resident Dashboard](docs/screenshots/resident-dashboard.png) | ![Resident Complaints](docs/screenshots/resident-complaints.png) |
+| ![Resident Dashboard](docs/screenshots/resident-dashboard.png.png) | ![Resident Complaints](docs/screenshots/resident-complaints.png.png) |
 
 | Raise a Complaint | Complaint Status Timeline |
 |---|---|
-| ![Raise Complaint](docs/screenshots/resident-raise-complaint.png) | ![Complaint Status](docs/screenshots/resident-complaint-status.png) |
+| ![Raise Complaint](docs/screenshots/resident-raise-complaint.png.png) | ![Complaint Status](docs/screenshots/resident-complaint-status.png.png) |
 
 | AI Assistant Chatbot |
 |---|
-| ![Chatbot](docs/screenshots/resident-chatbot.png) |
+| ![Chatbot](docs/screenshots/resident-chatbot.png.png) |
 
 ## Setup Guide
 
